@@ -1,0 +1,198 @@
+$(function () {
+  const tokenAddress = "0x57d06bb1e3b60c875cd3a4445a53217f9b44d390";
+  const tokenSymbol = "PHNX";
+  const tokenDecimals = 18;
+  const tokenImage = "https://phenix.finance/android-chrome-512x512.png";
+  const tokenInfoEndpoint =
+    "https://us-central1-phenix-app-881db.cloudfunctions.net/fetchTokenInformation";
+  const formatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  });
+
+  fetch("/php/script.php").then((output) => {
+    output.json().then((data) => {
+      $("#js-rewards")
+        .find("span")
+        .html(formatter.format(data.totalRX3Rewards));
+    });
+  });
+
+  $(".js-heading-slider").slick({
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    fade: true,
+    autoplay: true,
+    autoplaySpeed: 1400,
+    arrows: false,
+    dots: false,
+    infinite: true,
+    swipe: false,
+    swipeToSlide: false,
+  });
+
+  $(".section__video-slider").slick({
+    slidesToShow: 3,
+    slidesToScroll: 1,
+    arrows: false,
+    dots: true,
+    infinite: true,
+    swipe: true,
+    swipeToSlide: false,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        },
+      },
+    ],
+  });
+
+  $(".owl-carousel").owlCarousel({
+    loop: false,
+    margin: 30,
+    autoplay: false,
+    autoplayTimeout: 3000,
+    autoplayHoverPause: true,
+    responsiveClass: true,
+    navigation: false,
+    responsive: {
+      0: {
+        items: 1,
+      },
+      600: {
+        items: 1,
+        nav: false,
+      },
+      992: {
+        items: 2,
+        nav: false,
+      },
+      1000: {
+        items: 2,
+        loop: false,
+        nav: true,
+      },
+      1200: {
+        items: 3,
+        loop: false,
+        nav: true,
+      },
+    },
+  });
+
+  $(".js-add-token").on("click", function (e) {
+    e.preventDefault();
+    addTokenFunction();
+  });
+
+  async function addTokenFunction() {
+    try {
+      const wasAdded = await ethereum.request({
+        method: "wallet_watchAsset",
+        params: {
+          type: "ERC20",
+          options: {
+            address: tokenAddress,
+            symbol: tokenSymbol,
+            decimals: tokenDecimals,
+            image: tokenImage,
+          },
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  $(".section li, .section p, .section img, .section h2").each(function () {
+    // data-aos="fade-down" data-aos-duration="500"
+    $this = $(this);
+    $this.attr("data-aos", "fade-down").attr("data-aos-duration", "500");
+  });
+
+  $(".js-scroll li:not(.native)").on("click", function (e) {
+    e.preventDefault();
+    var id = $(this).find("a").attr("href");
+    $("html, body").animate(
+      {
+        scrollTop: $(id).offset().top + 100,
+      },
+      1000
+    );
+  });
+
+  $(".js-mobile").on("click", function (e) {
+    e.preventDefault();
+    $(this).toggleClass("active");
+    $(".menu-items-mobile").toggleClass("active");
+  });
+
+  $(".menu-items-mobile li:not(.native) a").on("click", function (e) {
+    e.preventDefault();
+    $(".js-mobile").toggleClass("active");
+    $(".menu-items-mobile").toggleClass("active");
+  });
+
+  $(".js-countdown").each(function () {
+    $this = $(this);
+
+    var endTime = $this.attr("data-date");
+    var countDownDate = new Date(endTime).getTime();
+
+    // Update the count down every 1 second
+    var x = setInterval(function () {
+      // Get today's date and time
+      var now = new Date().getTime();
+
+      // Find the distance between now and the count down date
+      var distance = countDownDate - now;
+
+      // Time calculations for days, hours, minutes and seconds
+      var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      var hours = Math.floor(
+        (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+      );
+      var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      // Display the result in the element with id="demo"
+      $this.html(
+        "FPC NFT DROP IN: " +
+          days +
+          "d " +
+          hours +
+          "h " +
+          minutes +
+          "m " +
+          seconds +
+          "s"
+      );
+    }, 1000);
+  });
+
+  $(".js-open-popup, .js-close").on("click", function (e) {
+    e.preventDefault();
+    console.log("opening");
+
+    var popupId = $(this).attr("data-target");
+    $(popupId).toggleClass("active");
+  });
+
+  $(document).on("scroll load", function () {
+    var scroll = $(window).scrollTop();
+    $(".header").toggleClass("scrolled", scroll > 150);
+  });
+
+  particlesJS.load(
+    "particles-js",
+    "/resources/scripts/particles.json",
+    function () {
+      console.log("callback - particles.js config loaded");
+    }
+  );
+
+  AOS.init();
+});
